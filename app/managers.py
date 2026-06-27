@@ -89,3 +89,5 @@ class ActorManager:
                 f"DELETE FROM {self.table_name} WHERE id = ?", (pk,)
             )
             return cursor.rowcount > 0
+
+# Fim do arquivo com quebra de linha exigida pelo Flake8
