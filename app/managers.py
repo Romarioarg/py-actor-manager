@@ -2,6 +2,7 @@ import sqlite3
 from typing import List, Optional
 from app.models import Actor
 
+
 class ActorManager:
     """Gerencia operações CRUD para atores em um banco SQLite."""
 
@@ -34,23 +35,36 @@ class ActorManager:
         with self._create_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                f"INSERT INTO {self.table_name} (first_name, last_name) VALUES (?, ?)",
+                f"INSERT INTO {self.table_name} "
+                "(first_name, last_name) VALUES (?, ?)",
                 (first_name, last_name),
             )
             conn.commit()
             actor_id = cursor.lastrowid
-        return Actor(id=actor_id, first_name=first_name, last_name=last_name)
+        return Actor(
+            id=actor_id, first_name=first_name, last_name=last_name
+        )
 
     def all(self) -> List[Actor]:
         """Retorna todos os atores cadastrados."""
         with self._create_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute(f"SELECT id, first_name, last_name FROM {self.table_name}")
+            cursor.execute(
+                f"SELECT id, first_name, last_name FROM {self.table_name}"
+            )
             rows = cursor.fetchall()
-        return [Actor(id=row[0], first_name=row[1], last_name=row[2]) for row in rows]
+        return [
+            Actor(id=row[0], first_name=row[1], last_name=row[2])
+            for row in rows
+        ]
 
-    def update(self, pk: int, new_first_name: str, new_last_name: str) -> Optional[Actor]:
-        """Atualiza os dados de um ator pelo ID e retorna o objeto atualizado."""
+    def update(
+        self, pk: int, new_first_name: str, new_last_name: str
+    ) -> Optional[Actor]:
+        """Atualiza os dados de um ator pelo ID.
+
+        Retorna o objeto atualizado.
+        """
         with self._create_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -67,9 +81,14 @@ class ActorManager:
         return Actor(id=pk, first_name=new_first_name, last_name=new_last_name)
 
     def delete(self, pk: int) -> bool:
-        """Remove um ator pelo ID. Retorna True se foi removido, False caso contrário."""
+        """Remove um ator pelo ID.
+
+        Retorna True se foi removido, False caso contrário.
+        """
         with self._create_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute(f"DELETE FROM {self.table_name} WHERE id = ?", (pk,))
+            cursor.execute(
+                f"DELETE FROM {self.table_name} WHERE id = ?", (pk,)
+            )
             conn.commit()
             return cursor.rowcount > 0
