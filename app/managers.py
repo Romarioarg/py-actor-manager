@@ -7,8 +7,9 @@ class ActorManager:
     """Gerencia operações CRUD para atores em um banco SQLite."""
 
     def __init__(self, db_name: str, table_name: str) -> None:
+        # Garante a regra do checklist: o nome da tabela sempre será plural
         if not table_name.endswith("s"):
-            raise ValueError("O nome da tabela deve estar no plural.")
+            table_name += "s"
 
         self.db_name = db_name
         self.table_name = table_name
@@ -21,12 +22,12 @@ class ActorManager:
             cursor = conn.cursor()
             cursor.execute(
                 f"""
-                 CREATE TABLE IF NOT EXISTS {self.table_name} (
-                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     first_name TEXT NOT NULL,
-                     last_name TEXT NOT NULL
-                 )
-                 """
+                CREATE TABLE IF NOT EXISTS {self.table_name} (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    first_name TEXT NOT NULL,
+                    last_name TEXT NOT NULL
+                )
+                """
             )
 
     def create(self, first_name: str, last_name: str) -> Actor:
@@ -57,7 +58,7 @@ class ActorManager:
         ]
 
     def update(
-            self, pk: int, new_first_name: str, new_last_name: str
+        self, pk: int, new_first_name: str, new_last_name: str
     ) -> Optional[Actor]:
         """Atualiza os dados de um ator pelo ID.
 
@@ -67,10 +68,10 @@ class ActorManager:
             cursor = conn.cursor()
             cursor.execute(
                 f"""
-                 UPDATE {self.table_name}
-                 SET first_name = ?, last_name = ?
-                 WHERE id = ?
-                 """,
+                UPDATE {self.table_name}
+                SET first_name = ?, last_name = ?
+                WHERE id = ?
+                """,
                 (new_first_name, new_last_name, pk),
             )
             if cursor.rowcount == 0:
@@ -88,6 +89,3 @@ class ActorManager:
                 f"DELETE FROM {self.table_name} WHERE id = ?", (pk,)
             )
             return cursor.rowcount > 0
-
-
-0
